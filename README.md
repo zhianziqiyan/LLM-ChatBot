@@ -16,7 +16,6 @@ src/
 │ ├── markdown.js # Markdown 处理
 │ └── messageHandler.js # 消息处理
 ├── views/ # 页面
-│ ├── HomePage.vue # 首页
 │ └── ChatView.vue # 主聊天页面
 └── App.vue # 根组件
 ```

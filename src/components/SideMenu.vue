@@ -1,3 +1,24 @@
+<script setup>
+import { ref } from 'vue';
+
+const isCollapse = ref(false);
+// 新增：动态聊天记录数组（模拟 ChatGPT 聊天列表）
+const chatList = ref([
+  { id: 1, name: "与 AI 讨论 Vue 开发" },
+  { id: 2, name: "学习 Element Plus 组件" },
+  { id: 3, name: "项目需求分析" }
+]);
+
+const toggleCollapse = () => {
+  isCollapse.value = !isCollapse.value;
+};
+
+// 新增：删除聊天记录方法
+const deleteChat = (id) => {
+  chatList.value = chatList.value.filter(chat => chat.id !== id);
+};
+</script>
+
 <template>
   <el-menu class="el-menu" :collapse="isCollapse">
     <!-- 侧边栏顶部控制图标 -->
@@ -38,27 +59,6 @@
     </el-menu-item>
   </el-menu>
 </template>
-
-<script setup>
-import { ref } from 'vue';
-
-const isCollapse = ref(false);
-// 新增：动态聊天记录数组（模拟 ChatGPT 聊天列表）
-const chatList = ref([
-  { id: 1, name: "与 AI 讨论 Vue 开发" },
-  { id: 2, name: "学习 Element Plus 组件" },
-  { id: 3, name: "项目需求分析" }
-]);
-
-const toggleCollapse = () => {
-  isCollapse.value = !isCollapse.value;
-};
-
-// 新增：删除聊天记录方法
-const deleteChat = (id) => {
-  chatList.value = chatList.value.filter(chat => chat.id !== id);
-};
-</script>
 
 <style scoped>
 .el-menu:not(.el-menu--collapse) {

@@ -1,0 +1,80 @@
+<script setup>
+import { ref } from 'vue';
+import { Promotion } from '@element-plus/icons-vue';
+
+const inputValue = ref('');
+
+// 处理提交逻辑（未修改）
+const handleSubmit = (e) => {
+  if (e?.shiftKey) return;
+  
+  const content = inputValue.value.trim();
+  if (!content) return;
+  
+  const submitEvent = new CustomEvent('submit', { detail: { content } });
+  window.dispatchEvent(submitEvent);
+  
+  inputValue.value = '';
+};
+</script>
+
+<template>
+  <div class="chat-input-container">
+    <el-input
+      v-model="inputValue"
+      type="textarea"
+      resize="none"
+      :autosize="{ minRows: 1, maxRows: 3 }"
+      placeholder="输入消息，Enter 发送，Shift + Enter 换行"
+      @keyup.enter="handleSubmit"
+      class="input-area"
+    />
+    <el-button 
+      :icon="Promotion" 
+      type="primary"
+      circle 
+      @click="handleSubmit"
+      class="submit-btn"
+    />
+  </div>
+</template>
+
+<style scoped>
+.chat-input-container {
+  width: 640px;
+  height: 104px;
+  position: relative;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  background: #ffffff;
+  margin: 0 auto;
+}
+
+.input-area {
+  width: 100%;
+  height: 100%;
+}
+
+/* 覆盖正常状态和聚焦状态的边框 */
+.input-area ::v-deep .el-textarea__inner {
+    border-radius: 8px;
+    resize: none;
+    border: none;
+    box-shadow: none;
+
+    &:focus {
+      border: none;
+      box-shadow: none;
+    }
+}
+
+.submit-btn {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  height: 30px;
+  width: 30px;
+  flex-shrink: 0;
+}
+</style>
