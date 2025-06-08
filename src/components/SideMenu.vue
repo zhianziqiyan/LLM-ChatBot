@@ -10,7 +10,7 @@
     <!-- 新聊天菜单项 -->
     <el-menu-item index="1" class="new-chat-item">
       <el-icon>
-        <Edit />
+        <Edit /> 
       </el-icon>
       <template #title>新聊天</template>
     </el-menu-item>
