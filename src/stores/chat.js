@@ -64,7 +64,7 @@ export const useChatStore = defineStore(
      */
     const createConversation = () => {
       const newConversation = {
-        id: Date.now(),
+        id: Date.now().toString(),
         title: "新对话",
         messages: [],
         createdAt: Date.now(),

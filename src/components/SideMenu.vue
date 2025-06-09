@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import DialogEdit from './DialogEdit.vue'; // 新增：导入设置对话框组件
+import SettingDialog from './SettingDialog.vue'; // 新增：导入设置对话框组件
 
 const isCollapse = ref(false);
 const isSettingDialogVisible = ref(false); // 新增：控制设置对话框显示的响应式变量
@@ -66,7 +66,7 @@ const openSettingDialog = () => {
     </el-menu-item>
     
     <!-- 新增：设置对话框 -->
-    <DialogEdit v-model="isSettingDialogVisible" />
+    <SettingDialog v-model="isSettingDialogVisible" />
   </el-menu>
 </template>
 

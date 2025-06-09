@@ -5,14 +5,22 @@ import { Promotion } from '@element-plus/icons-vue';
 const emit = defineEmits(['submit']); // 定义提交事件
 const inputValue = ref('');
 
+// 定义组件的 props，接收 loading 状态
+const props = defineProps({
+  loading: {
+    type: Boolean,
+    default: false
+  }
+});
+
 // 处理提交逻辑（仅触发事件）
 const handleSubmit = (e) => {
   if (e?.shiftKey) return;
   
-  const content = inputValue.value.trim();
-  if (!content) return;
+  const messageContent = inputValue.value.trim();
+  if (!messageContent) return;
 
-  emit('submit', content); // 触发提交事件并传递内容
+  emit('submit', messageContent); // 触发提交事件并传递内容
   inputValue.value = ''; // 清空输入框
 };
 </script>
