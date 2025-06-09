@@ -2,19 +2,18 @@
 import { ref } from 'vue';
 import { Promotion } from '@element-plus/icons-vue';
 
+const emit = defineEmits(['submit']); // 定义提交事件
 const inputValue = ref('');
 
-// 处理提交逻辑（未修改）
+// 处理提交逻辑（仅触发事件）
 const handleSubmit = (e) => {
   if (e?.shiftKey) return;
   
   const content = inputValue.value.trim();
   if (!content) return;
-  
-  const submitEvent = new CustomEvent('submit', { detail: { content } });
-  window.dispatchEvent(submitEvent);
-  
-  inputValue.value = '';
+
+  emit('submit', content); // 触发提交事件并传递内容
+  inputValue.value = ''; // 清空输入框
 };
 </script>
 
@@ -45,10 +44,11 @@ const handleSubmit = (e) => {
   height: 104px;
   position: relative;
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  border-radius: 28px;
   padding: 16px;
   background: #ffffff;
   margin: 0 auto;
+  margin-bottom: 32px;
 }
 
 .input-area {

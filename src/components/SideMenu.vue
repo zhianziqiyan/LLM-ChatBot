@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from 'vue';
+import DialogEdit from './DialogEdit.vue'; // 新增：导入设置对话框组件
 
 const isCollapse = ref(false);
+const isSettingDialogVisible = ref(false); // 新增：控制设置对话框显示的响应式变量
 // 新增：动态聊天记录数组（模拟 ChatGPT 聊天列表）
 const chatList = ref([
   { id: 1, name: "与 AI 讨论 Vue 开发" },
@@ -16,6 +18,11 @@ const toggleCollapse = () => {
 // 新增：删除聊天记录方法
 const deleteChat = (id) => {
   chatList.value = chatList.value.filter(chat => chat.id !== id);
+};
+
+// 新增：打开设置对话框的方法
+const openSettingDialog = () => {
+  isSettingDialogVisible.value = true;
 };
 </script>
 
@@ -35,8 +42,8 @@ const deleteChat = (id) => {
       </el-icon>
       <template #title>新聊天</template>
     </el-menu-item>
-    <!-- 设置菜单项 -->
-    <el-menu-item index="2" class="setting-item">
+    <!-- 设置菜单项（关键修改） -->
+    <el-menu-item index="2" class="setting-item" @click="openSettingDialog">
       <el-icon>
         <Setting />
       </el-icon>
@@ -57,6 +64,9 @@ const deleteChat = (id) => {
         </el-icon>
       </template>
     </el-menu-item>
+    
+    <!-- 新增：设置对话框 -->
+    <DialogEdit v-model="isSettingDialogVisible" />
   </el-menu>
 </template>
 
@@ -82,10 +92,9 @@ const deleteChat = (id) => {
 }
 
 .menu-header {
-  padding: 16px 0;
-  border-bottom: 1px solid #e4e7ed;
+  padding: 15.25px 0;
   text-align: left;
-  padding-left: 16px;
+  padding-left: 20px;
 }
 
 .control-icon {
