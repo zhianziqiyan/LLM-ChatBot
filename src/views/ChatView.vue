@@ -124,9 +124,6 @@ const handleMessageSubmit = async (messageContent) => {
   /* 启用flex布局 */
   justify-content: center;
   /* 水平居中 */
-  align-items: center;
-  /* 垂直居中（关键修改） */
-  /* 移除 min-height: 100%，避免强制占满父容器 */
 }
 
 .empty-state {
@@ -147,7 +144,7 @@ const handleMessageSubmit = async (messageContent) => {
 }
 
 .messages-list {
-  width: 100%;
+  width: 640px;
   overflow-y: auto;
 }
 </style>

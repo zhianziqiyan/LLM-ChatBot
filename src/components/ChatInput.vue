@@ -53,7 +53,7 @@ const handleSubmit = (e) => {
   position: relative;
   border: 1px solid #e5e7eb;
   border-radius: 28px;
-  padding: 16px;
+  padding: 10px;
   background: #ffffff;
   margin: 0 auto;
   margin-bottom: 32px;
