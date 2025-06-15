@@ -2,6 +2,7 @@
 
 // 导入 Markdown 渲染工具（将 Markdown 文本转换为 HTML）
 import { renderMarkdown } from '../utils/markdown.js'
+import { computed } from 'vue'
 // 定义组件接收的消息 prop
 const props = defineProps({
   message: {
@@ -13,6 +14,11 @@ const props = defineProps({
     default: false
   }
 })
+
+// 计算属性：将消息内容渲染为 HTML（使用 Markdown 解析）
+const renderedContent = computed(() => {
+  return renderMarkdown(props.message.content)
+})
 </script>
 
 <template>
@@ -20,7 +26,7 @@ const props = defineProps({
 
     <!-- 消息内容容器 -->
     <div class="message-content">
-      <!-- 加载状态（流式响应时显示） -->
+      <!-- 加载状态（独立显示，不再与内容互斥） -->
       <div v-if="props.message.loading" class="message-loading">
         <el-icon>
           <Loading />
@@ -28,8 +34,8 @@ const props = defineProps({
         <span>思考中...</span>
       </div>
 
-      <!-- 实际内容（加载完成后显示） -->
-      <div v-else class="message-body">
+      <!-- 实际内容（始终显示，不再受 loading 状态控制） -->
+      <div class="message-body">
         <!-- 推理过程（可选显示） -->
         <div v-if="props.message.reasoning_content" class="message-reasoning">
           <el-collapse>
@@ -40,13 +46,7 @@ const props = defineProps({
         </div>
 
         <!-- Markdown 渲染内容 -->
-        <div class="message-text" v-html="renderMarkdown(props.message.content)"></div>
-
-        <!-- 元数据（Token 消耗、响应速度） -->
-        <div class="message-meta">
-          <span>消耗 Token: {{ props.message.completion_tokens }}</span>
-          <span>响应速度: {{ props.message.speed }} Token/秒</span>
-        </div>
+        <div class="message-text" v-html="renderedContent"></div>
       </div>
     </div>
   </div>

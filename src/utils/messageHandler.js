@@ -7,7 +7,6 @@ export const messageHandler = {
   * @param {string} role - 消息角色（'user' 用户 / 'assistant' 助手）
   * @param {string} content - 消息正文内容
   * @param {string} [reasoning_content=''] - 推理过程（可选）
-  * @param {Array} [files=[]] - 关联文件列表（可选）
   * @returns {object} 格式化后的消息对象
   */
     formatMessage(role, content, reasoning_content = '') {
@@ -27,41 +26,41 @@ export const messageHandler = {
    * @param {Function} updateCallback - 更新回调（接收 content, reasoning, tokens, speed）
    */
     async handleStreamResponse(response, updateCallback) {
-        const reader = response.body.getReader() // 获取流式读取器
-        const decoder = new TextDecoder() // 用于解码二进制数据为字符串
-        let accumulatedContent = '' // 累加的消息正文（流式逐步填充）
-        let accumulatedReasoning = '' // 累加的推理过程（流式逐步填充）
-        let startTime = Date.now() // 记录响应开始时间（用于计算速度）
-    
-        while (true) {
-          const { done, value } = await reader.read() // 读取流式数据块
-          if (done) break // 读取完成时退出循环
-    
-          const chunk = decoder.decode(value) // 解码二进制数据为字符串
-          // 按行分割数据（过滤空行）
-          const lines = chunk.split('\n').filter((line) => line.trim() !== '')
-    
-          for (const line of lines) {
-            if (line === 'data: [DONE]') continue // 忽略结束标志
-            if (line.startsWith('data: ')) { // 处理数据行（格式：data: JSON）
-              const data = JSON.parse(line.slice(5)) // 提取 JSON 数据（去掉 'data: ' 前缀）
-              const content = data.choices[0].delta.content || '' // 本次返回的正文增量
-              const reasoning = data.choices[0].delta.reasoning_content || '' // 本次返回的推理增量
-    
-              accumulatedContent += content // 累加正文
-              accumulatedReasoning += reasoning // 累加推理过程
-    
-              // 调用回调更新 UI（传递当前累计内容、Token 数、速度）
-              updateCallback(
-                accumulatedContent,
-                accumulatedReasoning,
-                data.usage?.completion_tokens || 0, // 累计消耗的 Token 数
-                ((data.usage?.completion_tokens || 0) / ((Date.now() - startTime) / 1000)).toFixed(2) // 速度（Token/秒）
-              )
-            }
+      const reader = response.body.getReader() // 获取流式读取器
+      const decoder = new TextDecoder() // 用于解码二进制数据为字符串
+      let accumulatedContent = '' // 累加的消息正文（流式逐步填充）
+      let accumulatedReasoning = '' // 累加的推理过程（流式逐步填充）
+      let startTime = Date.now() // 记录响应开始时间（用于计算速度）
+  
+      while (true) {
+        const { done, value } = await reader.read() // 读取流式数据块
+        if (done) break // 读取完成时退出循环
+  
+        const chunk = decoder.decode(value) // 解码二进制数据为字符串
+        // 按行分割数据（过滤空行）
+        const lines = chunk.split('\n').filter((line) => line.trim() !== '')
+  
+        for (const line of lines) {
+          if (line === 'data: [DONE]') continue // 忽略结束标志
+          if (line.startsWith('data: ')) { // 处理数据行（格式：data: JSON）
+            const data = JSON.parse(line.slice(5)) // 提取 JSON 数据（去掉 'data: ' 前缀）
+            const content = data.choices[0].delta.content || '' // 本次返回的正文增量
+            const reasoning = data.choices[0].delta.reasoning_content || '' // 本次返回的推理增量
+  
+            accumulatedContent += content // 累加正文
+            accumulatedReasoning += reasoning // 累加推理过程
+  
+            // 调用回调更新 UI（传递当前累计内容、Token 数、速度）
+            updateCallback(
+              accumulatedContent,
+              accumulatedReasoning,
+              data.usage?.completion_tokens || 0, // 累计消耗的 Token 数
+              ((data.usage?.completion_tokens || 0) / ((Date.now() - startTime) / 1000)).toFixed(2) // 速度（Token/秒）
+            )
           }
         }
-      },
+      }
+    },
 
     /**
    * 处理非流式响应（一次性获取完整内容）

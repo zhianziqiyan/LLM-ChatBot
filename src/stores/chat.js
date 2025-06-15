@@ -132,9 +132,9 @@ export const useChatStore = defineStore(
        * @param {string} speed - 响应速度（Token/秒，可选）
        */
     const updateLastMessage = (content, reasoning_content, completion_tokens, speed) => {
-      const lastMessage = currentConversation.value.messages[currentConversation.value.messages.length - 1]
-      if (lastMessage) {
-        lastMessage.content += content
+      if (currentConversation.value?.messages.length > 0) {
+        const lastMessage = currentConversation.value.messages[currentConversation.value.messages.length - 1]
+        lastMessage.content = content
         lastMessage.reasoning_content = reasoning_content
         lastMessage.completion_tokens = completion_tokens
         lastMessage.speed = speed
@@ -146,7 +146,10 @@ export const useChatStore = defineStore(
        * @returns {object | null} 最后一条消息对象，无消息时返回 null
        */
     const getLastMessage = () => {
-      return currentConversation.value.messages[currentConversation.value.messages.length - 1] || null
+      if (currentConversation.value?.messages.length > 0) {
+        return currentConversation.value.messages[currentConversation.value.messages.length - 1]
+      }
+      return null
     }
 
     return {

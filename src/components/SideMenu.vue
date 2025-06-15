@@ -1,29 +1,57 @@
 <script setup>
-import { ref } from 'vue';
-import SettingDialog from './SettingDialog.vue'; // 新增：导入设置对话框组件
+import { ref, nextTick } from 'vue';
+import SettingDialog from './SettingDialog.vue';
+import { useChatStore } from '../stores/chat';
+import { Expand, Fold, Edit, Setting, ChatLineSquare, Close, EditPen } from '@element-plus/icons-vue';
 
 const isCollapse = ref(false);
-const isSettingDialogVisible = ref(false); // 新增：控制设置对话框显示的响应式变量
-// 新增：动态聊天记录数组（模拟 ChatGPT 聊天列表）
-const chatList = ref([
-  { id: 1, name: "与 AI 讨论 Vue 开发" },
-  { id: 2, name: "学习 Element Plus 组件" },
-  { id: 3, name: "项目需求分析" }
-]);
+const isSettingDialogVisible = ref(false);
+const chatStore = useChatStore();
+// 新增：编辑状态管理
+const editingId = ref(null);
+const editTitle = ref('');
 
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value;
 };
 
-// 新增：删除聊天记录方法
 const deleteChat = (id) => {
-  chatList.value = chatList.value.filter(chat => chat.id !== id);
+  chatStore.deleteConversation(id);
+};
+
+// 新增：开始编辑标题
+const startEditing = (conversation) => {
+  editingId.value = conversation.id;
+  editTitle.value = conversation.title;
+  // 等待DOM更新后聚焦输入框
+  nextTick(() => {
+    const input = document.querySelector(`.title-input-${conversation.id}`);
+    if (input) input.focus();
+  });
+};
+
+// 新增：保存标题修改
+const saveTitle = (id) => {
+  if (editTitle.value.trim()) {
+    chatStore.updateConversationTitle(id, editTitle.value.trim());
+  }
+  editingId.value = null;
+};
+
+// 新增：点击外部区域保存
+const handleClickOutside = (e) => {
+  if (editingId.value && !e.target.closest('.title-content')) {
+    saveTitle(editingId.value);
+  }
 };
 
 // 新增：打开设置对话框的方法
 const openSettingDialog = () => {
   isSettingDialogVisible.value = true;
 };
+
+
+document.addEventListener('click', handleClickOutside);
 </script>
 
 <template>
@@ -36,9 +64,9 @@ const openSettingDialog = () => {
       </el-icon>
     </div>
     <!-- 新聊天菜单项 -->
-    <el-menu-item index="1" class="new-chat-item">
+    <el-menu-item index="1" class="new-chat-item" @click="chatStore.createConversation">
       <el-icon>
-        <Edit /> 
+        <Edit />
       </el-icon>
       <template #title>新聊天</template>
     </el-menu-item>
@@ -52,19 +80,37 @@ const openSettingDialog = () => {
     <!-- 不可点击的"聊天"文字 -->
     <div class="section-title">聊天</div>
     <!-- 动态渲染聊天记录（关键修改） -->
-    <el-menu-item v-for="(chat, index) in chatList" :key="chat.id" :index="`chat-${index + 3}`" class="chat-item">
+    <el-menu-item v-for="(conversation, index) in chatStore.conversations" :key="conversation.id"
+      :index="`chat-${conversation.id}`" class="chat-item" @click="chatStore.switchConversation(conversation.id)">
       <el-icon>
         <ChatLineSquare />
       </el-icon>
       <template #title>
-        <span>{{ chat.name }}</span>
-        <!-- 折叠时隐藏删除图标，展开时显示 -->
-        <el-icon v-if="!isCollapse" @click.stop="deleteChat(chat.id)" class="delete-icon">
-          <Close />
-        </el-icon>
+        <div class="title-content">
+          <!-- 修改：条件渲染标题或输入框 -->
+          <template v-if="editingId === conversation.id">
+            <el-input
+              v-model="editTitle"
+              size="small"
+              class="title-input title-input-{{ conversation.id }}"
+              @blur="saveTitle(conversation.id)"
+              @keyup.enter="saveTitle(conversation.id)"
+            />
+          </template>
+          <span v-else>{{ conversation.title }}</span>
+
+          <div class="action-icons">
+            <el-icon @click.stop="startEditing(conversation)" class="edit-icon">
+              <EditPen />
+            </el-icon>
+            <el-icon @click.stop="deleteChat(conversation.id)" class="delete-icon">
+              <Close />
+            </el-icon>
+          </div>
+        </div>
       </template>
     </el-menu-item>
-    
+
     <!-- 新增：设置对话框 -->
     <SettingDialog v-model="isSettingDialogVisible" />
   </el-menu>
@@ -129,5 +175,40 @@ const openSettingDialog = () => {
 .delete-icon:hover {
   color: #f56c6c;
   /* 红色悬停反馈 */
+}
+
+.title-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.action-icons {
+  display: flex;
+  gap: 8px; /* 控制图标之间的间距 */
+}
+
+/* 新增：输入框样式 */
+.title-input {
+  width: 120px;
+  margin-right: 8px;
+}
+
+/* 调整图标样式 */
+.edit-icon,
+.delete-icon {
+  cursor: pointer;
+  font-size: 16px;
+  color: #c0c4cc;
+  transition: color 0.2s;
+}
+
+.edit-icon:hover {
+  color: #409eff;
+}
+
+.delete-icon:hover {
+  color: #f56c6c;
 }
 </style>

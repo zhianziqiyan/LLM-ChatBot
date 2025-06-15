@@ -55,8 +55,8 @@ const handleMessageSubmit = async (messageContent) => {
 
   } catch (error) {
     // 错误处理：更新助手消息为错误提示
-    console.error('Failed to send message:', error)
-    chatStore.updateLastMessage('抱歉，发生了一些错误，请稍后重试。')
+    console.error('完整错误信息:', error);
+    chatStore.updateLastMessage('抱歉，发生了一些错误，请稍后重试。\n错误详情: ' + error.message)
   } finally {
     // 无论成功/失败，重置加载状态
     chatStore.setIsLoading(false)
@@ -82,12 +82,8 @@ const handleMessageSubmit = async (messageContent) => {
       </div>
       <!-- 有消息时显示消息列表 -->
       <div v-else class="messages-list">
-        <ChatMessage
-         v-for="(message,index) in currentMessages" 
-         :key="message.id" 
-         :message="message"
-         :is-last-assistant-message="index === currentMessages.length - 1"
-          />
+        <ChatMessage v-for="(message, index) in currentMessages" :key="message.id" :message="message"
+          :is-last-assistant-message="index === currentMessages.length - 1" />
       </div>
     </el-main>
 
