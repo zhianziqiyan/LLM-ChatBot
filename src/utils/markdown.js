@@ -7,8 +7,7 @@ import mdLinkAttributes from 'markdown-it-link-attributes'
 // 导入表情符号插件（支持 Markdown 中的 :emoji: 语法）
 import { full as emoji } from 'markdown-it-emoji'
 // 导入代码高亮主题样式（atom-one-dark 暗黑主题）
-import 'highlight.js/styles/atom-one-dark.css'
-// 导入自定义图标资源（用于代码块的复制、主题切换按钮）
+import { CopyDocument } from '@element-plus/icons-vue'
 
 /**
  * 创建 MarkdownIt 实例并配置核心功能
@@ -26,12 +25,12 @@ const md = MarkdownIt({
         // 如果代码块有指定语言（如 JavaScript），则使用 highlight.js 进行高亮
         if (lang && hljs.getLanguage(lang)) {
             try {
-                const code = hljs.highlight(str, { language: lang }).value
+                const code = hljs.highlight(str, { language: lang ,ignoreIllegals:true}).value
                 //包裹代码块为带交互按钮的 HTML 结构（包含语言标识、复制）
                 return `<div class="code-block">
                         <div class="code-header">
                             <span class="code-lang">${lang}</span>
-                            <button class="copy-btn" data-clipboard-text="${str}">复制</button>
+                            <button class="copy-btn">复制</button>
                         </div>
                         <pre class="hljs"><code>${code}</code></pre>
                     </div>`
