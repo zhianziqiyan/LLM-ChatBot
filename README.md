@@ -34,7 +34,7 @@
 1. 克隆项目到本地
 
 ```bash
-git clone https://github.com/yourusername/LLM-ChatBot.git
+git clone https://github.com/zhianziqiyan/LLM-ChatBot.git
 cd LLM-ChatBot
 ```
 
@@ -76,23 +76,25 @@ yarn preview
 LLM-ChatBot/
 ├── public/             # 静态资源
 ├── src/
-│   ├── assets/        # 项目资源文件
+│   ├── assets/        # 静态资源
 │   ├── components/    # 组件
-│   │   ├── ChatInput.vue        # 聊天输入组件
+│   │   ├── ChatInput.vue        # 聊天输入框组件
 │   │   ├── ChatMessage.vue      # 消息显示组件
-│   │   ├── SettingDialog.vue    # 设置对话框组件
-│   │   └── SideMenu.vue         # 侧边菜单组件
-│   ├── router/        # 路由配置
-│   ├── stores/        # 状态管理
-│   │   ├── chat.js              # 聊天状态管理
-│   │   └── setting.js           # 设置状态管理
+│   │   ├── DialogEdit.vue       # 对话编辑弹窗
+│   │   ├── PopupMenu.vue        # 侧边菜单组件
+│   │   ├── SearchDialog.vue     # 搜索对话框组件
+│   │   └── SettingsPanel.vue    # 设置面板组件
+│   ├── stores/        # Pinia 状态管理
+│   │   ├── chat.js              # 聊天相关状态
+│   │   └── setting.js           # 设置相关状态
 │   ├── utils/         # 工具函数
-│   │   ├── api.js               # API 调用
-│   │   ├── markdown.js          # Markdown 渲染
+│   │   ├── request.js           # 网络请求封装
+│   │   ├── api.js               # 具体接口定义
+│   │   ├── markdown.js          # Markdown 处理
 │   │   └── messageHandler.js    # 消息处理
-│   ├── views/         # 页面视图
-│   │   └── ChatView.vue         # 聊天主视图
-│   ├── App.vue        # 应用根组件
+│   ├── views/         # 页面
+│   │   └── ChatView.vue         # 主聊天页面
+│   ├── App.vue        # 根组件
 │   ├── main.js        # 应用入口
 │   └── style.css      # 全局样式
 ├── .gitignore         # Git 忽略文件
@@ -108,10 +110,12 @@ LLM-ChatBot/
 
 1. **发送消息**：在输入框中输入消息，按 Enter 键或点击发送按钮
 2. **换行**：按 Shift + Enter 键在输入框中换行
-3. **创建新对话**：点击侧边栏的「新对话」按钮
-4. **切换对话**：点击侧边栏中的对话列表项
+3. **创建新对话**：点击侧边菜单的「新对话」按钮
+4. **切换对话**：点击侧边菜单中的对话列表项
 5. **删除对话**：点击对话列表项右侧的删除按钮
-6. **查看设置**：点击侧边栏的设置按钮，可配置模型参数
+6. **编辑对话**：点击对话列表项右侧的编辑按钮，可修改对话标题
+7. **搜索对话**：点击侧边菜单的搜索按钮，可搜索历史对话
+8. **查看设置**：点击侧边菜单的设置按钮，可配置模型参数
 
 ### 高级功能
 
