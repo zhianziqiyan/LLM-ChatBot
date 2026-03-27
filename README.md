@@ -44,6 +44,8 @@ cd LLM-ChatBot
 npm install
 # 或
 yarn install
+# 或
+pnpm install
 ```
 
 3. 启动开发服务器
@@ -52,6 +54,8 @@ yarn install
 npm run dev
 # 或
 yarn dev
+# 或
+pnpm dev
 ```
 
 4. 构建生产版本
@@ -60,6 +64,8 @@ yarn dev
 npm run build
 # 或
 yarn build
+# 或
+pnpm build
 ```
 
 5. 预览生产构建
@@ -68,6 +74,8 @@ yarn build
 npm run preview
 # 或
 yarn preview
+# 或
+pnpm preview
 ```
 
 ## 项目结构
