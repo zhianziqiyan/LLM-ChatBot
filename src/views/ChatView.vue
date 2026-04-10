@@ -1,146 +1,185 @@
 <script setup>
-import ChatInput from '../components/ChatInput.vue';
-import ChatMessage from '../components/ChatMessage.vue'; // 新增：导入消息显示组件
-
-import { ref, computed } from 'vue';
-
+  import ChatInput from '../components/ChatInput.vue';
+import ChatMessage from '../components/ChatMessage.vue';
+import { ref, computed, nextTick, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useChatStore } from '../stores/chat.js';
 import { useSettingStore } from '../stores/setting.js';
-
 import { createChatCompletion } from '../utils/api.js';
-import { messageHandler } from '../utils/messageHandler.js'; // 导入消息处理器
+import { messageHandler } from '../utils/messageHandler.js';
+import { ChatLineRound } from '@element-plus/icons-vue';
 
+const { t } = useI18n();
 const chatStore = useChatStore();
 const settingStore = useSettingStore();
-const isLoading = computed(() => chatStore.isLoading)
+const isLoading = computed(() => chatStore.isLoading);
 const currentMessages = computed(() => chatStore.currentMessages);
+const messagesContainerRef = ref(null);
 
-// 当前对话标题（计算属性，从 Store 获取）
-const currentTitle = computed(() => chatStore.currentConversation?.title || 'LLM Chat')
-// 格式化标题（过长时截断显示）
+const currentTitle = computed(() => chatStore.currentConversation?.title || 'LLM Chat');
+
 const formatTitle = (title) => {
-  return title.length > 4 ? title.slice(0, 4) + '...' : title // 超过4字符显示前4位+...
-}
+  return title.length > 4 ? title.slice(0, 4) + '...' : title
+};
 
-// 处理输入框提交事件（包含 API 调用）
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (messagesContainerRef.value) {
+      const container = messagesContainerRef.value;
+      container.scrollTop = container.scrollHeight;
+    }
+  });
+};
+
+watch(currentMessages, () => {
+  scrollToBottom();
+}, { deep: true });
+
 const handleMessageSubmit = async (messageContent) => {
   try {
-    // 1. 添加用户消息到当前对话（使用消息处理器格式化）
     chatStore.addMessage(
       messageHandler.formatMessage('user', messageContent, '')
     )
-    // 2. 添加空的助手消息占位（等待 API 响应填充内容）
     chatStore.addMessage(
       messageHandler.formatMessage('assistant', '', '')
     )
 
-    // 3. 开启加载状态（输入框显示加载动画）
     chatStore.setIsLoading(true);
-    const lastMessage = chatStore.getLastMessage() // 获取最后一条消息（助手消息）
-    lastMessage.loading = true // 标记消息为加载中（用于 UI 状态）
+    const lastMessage = chatStore.getLastMessage()
+    lastMessage.loading = true
 
-    // 4. 调用 API 获取模型回复（传入当前对话的消息列表）
+    scrollToBottom();
+
     const messages = chatStore.currentMessages.map(({ role, content }) => ({ role, content }))
     const response = await createChatCompletion(messages)
 
-    // 5. 处理 API 响应（流式或非流式）
     await messageHandler.handleResponse(
-      response, // API 原始响应
-      settingStore.settings.stream, // 是否开启流式响应（来自设置）
-      // 流式回调：逐步更新助手消息内容（正文、推理过程、Token 数、速度）
+      response,
+      settingStore.settings.stream,
       (content, reasoning_content, tokens, speed) => {
         chatStore.updateLastMessage(content, reasoning_content, tokens, speed)
+        scrollToBottom();
       }
     )
 
   } catch (error) {
-    // 错误处理：更新助手消息为错误提示
-    console.error('完整错误信息:', error);
-    chatStore.updateLastMessage('抱歉，发生了一些错误，请稍后重试。\n错误详情: ' + error.message)
+    console.error('Full error:', error);
+    chatStore.updateLastMessage(t('chatView.errorMessage') + error.message)
   } finally {
-    // 无论成功/失败，重置加载状态
     chatStore.setIsLoading(false)
     const lastMessage = chatStore.getLastMessage()
-    lastMessage.loading = false
+    if (lastMessage) lastMessage.loading = false
   }
 };
 </script>
 
 <template>
-  <el-container class="chat-view-container">
+  <div class="chat-view-container">
     <el-header class="chat-header">
       <span class="current-title">{{ currentTitle }}</span>
     </el-header>
 
-    <el-main class="messages-container">
-      <!-- 没有消息时显示空状态 -->
+    <el-main class="messages-container" ref="messagesContainerRef">
       <div v-if="currentMessages.length === 0" class="empty-state">
-        <el-icon class="empty-logo">
-          <ChatLineRound />
-        </el-icon>
-        <p class="empty-text">有什么可以帮忙的？</p>
+        <div class="empty-icon">
+          <el-icon :size="64"><ChatLineRound /></el-icon>
+        </div>
+        <h2 class="empty-title">{{ t('chatView.emptyTitle') }}</h2>
+        <p class="empty-description">{{ t('chatView.emptyDescription') }}</p>
       </div>
-      <!-- 有消息时显示消息列表 -->
       <div v-else class="messages-list">
-        <ChatMessage v-for="(message, index) in currentMessages" :key="message.id" :message="message"
-          :is-last-assistant-message="index === currentMessages.length - 1" />
+        <ChatMessage
+          v-for="(message, index) in currentMessages"
+          :key="message.id"
+          :message="message"
+          :is-last-assistant-message="index === currentMessages.length - 1"
+        />
       </div>
     </el-main>
 
     <div class="input-container">
       <ChatInput @submit="handleMessageSubmit" :loading="isLoading" />
     </div>
-  </el-container>
+  </div>
 </template>
 
 <style scoped>
 .chat-view-container {
   height: 100vh;
-  /* 占满整个视口高度 */
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-color);
 }
 
 .chat-header {
-  height: 56px;
-  /* Header高度固定 */
+  height: 60px;
   line-height: 60px;
-  /* 文字垂直居中 */
-  padding: 0 24px;
+  padding: 0 32px;
   background: #ffffff;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.current-title {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .messages-container {
-  padding: 24px;
+  flex: 1;
   overflow-y: auto;
-  /* 消息过多时滚动 */
-  background: #ffffff;
+  padding: 24px 32px;
   display: flex;
-  /* 启用flex布局 */
-  justify-content: center;
-  /* 水平居中 */
+  flex-direction: column;
 }
 
 .empty-state {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  color: #6c757d;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text-secondary);
 }
 
-.empty-logo {
-  font-size: 48px;
-  color: #ced4da;
+.empty-icon {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light) 0%, #ffffff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  margin-bottom: 8px;
 }
 
-.empty-text {
+.empty-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.empty-description {
   font-size: 14px;
+  color: var(--text-placeholder);
+  margin: 0;
 }
 
 .messages-list {
-  width: 640px;
-  overflow-y: auto;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.input-container {
+  padding: 16px 32px 24px;
+  background: #ffffff;
+  border-top: 1px solid var(--border-color);
 }
 </style>

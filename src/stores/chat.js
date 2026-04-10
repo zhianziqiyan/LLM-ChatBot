@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
+import { i18n } from "../locale";
 
 export const useChatStore = defineStore(
   "llm-chat",
@@ -14,8 +15,8 @@ export const useChatStore = defineStore(
      */
     const conversations = ref([
       {
-        id: "1", //`默认对话`的id
-        title: "新对话",
+        id: "1",
+        title: i18n.global.locale.value === 'zh' ? "新对话" : "New Chat",
         messages: [],
         createdAt: Date.now(),
       },
@@ -65,12 +66,12 @@ export const useChatStore = defineStore(
     const createConversation = () => {
       const newConversation = {
         id: Date.now().toString(),
-        title: "新对话",
+        title: i18n.global.locale.value === 'zh' ? "新对话" : "New Chat",
         messages: [],
         createdAt: Date.now(),
       };
-      conversations.value.unshift(newConversation); //将新对话添加到数组的开头
-      currentConversationId.value = newConversation.id; //将新对话的id设置为当前对话的id
+      conversations.value.unshift(newConversation);
+      currentConversationId.value = newConversation.id;
     };
 
     /**
