@@ -1,6 +1,6 @@
 # LLM-ChatBot
 
-[中文版本](README.md)｜English Version
+中文版本｜[English Version](README.en.md)
 
 一个基于 Vue 3 的现代化 LLM 聊天机器人应用，支持多对话管理、Markdown 渲染、流式响应、推理过程展示和多语言切换。
 
