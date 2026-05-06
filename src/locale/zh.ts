@@ -1,0 +1,45 @@
+export default {
+  sidebar: {
+    newChat: '新对话',
+    settings: '设置',
+    theme: '主题',
+    chatHistory: '历史对话',
+    toggle: '切换侧边栏',
+    rename: '重命名',
+    delete: '删除',
+  },
+  chatInput: {
+    placeholder: '输入消息，Enter 发送，Shift + Enter 换行',
+    hint: 'AI 助手可能会生成不准确的信息，请仔细核对重要内容',
+    send: '发送',
+    stop: '停止',
+  },
+  chatMessage: {
+    reasoningTitle: '推理过程',
+    copy: '复制',
+    copied: '已复制！',
+    copyFailed: '复制失败',
+    retry: '重试',
+  },
+  chatView: {
+    emptyTitle: '开始新对话',
+    emptyDescription: '有什么可以帮你的？',
+    errorMessage: '抱歉，发生了错误。',
+    clear: '清空消息',
+  },
+  setting: {
+    title: '设置',
+    selectModel: '模型',
+    selectModelPlaceholder: '选择模型',
+    apiKeyPlaceholder: '请输入 API Key',
+    streaming: '流式响应',
+    maxTokens: '最大 Token 数',
+    temperature: '温度参数',
+    topP: '核采样参数',
+    topK: 'Top K',
+    confirm: '完成',
+  },
+  common: {
+    switchLang: 'English',
+  },
+}

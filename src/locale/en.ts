@@ -1,0 +1,45 @@
+export default {
+  sidebar: {
+    newChat: 'New Chat',
+    settings: 'Settings',
+    theme: 'Theme',
+    chatHistory: 'Chat History',
+    toggle: 'Toggle Sidebar',
+    rename: 'Rename',
+    delete: 'Delete',
+  },
+  chatInput: {
+    placeholder: 'Type a message, Enter to send, Shift + Enter for new line',
+    hint: 'AI assistant may generate inaccurate information, please verify important content',
+    send: 'Send',
+    stop: 'Stop',
+  },
+  chatMessage: {
+    reasoningTitle: 'Reasoning',
+    copy: 'Copy',
+    copied: 'Copied!',
+    copyFailed: 'Failed',
+    retry: 'Retry',
+  },
+  chatView: {
+    emptyTitle: 'Start a Conversation',
+    emptyDescription: 'How can I help you today?',
+    errorMessage: 'Sorry, something went wrong. ',
+    clear: 'Clear Messages',
+  },
+  setting: {
+    title: 'Settings',
+    selectModel: 'Model',
+    selectModelPlaceholder: 'Select a model',
+    apiKeyPlaceholder: 'Enter your API Key',
+    streaming: 'Streaming',
+    maxTokens: 'Max Tokens',
+    temperature: 'Temperature',
+    topP: 'Top P',
+    topK: 'Top K',
+    confirm: 'Done',
+  },
+  common: {
+    switchLang: '中文',
+  },
+}
